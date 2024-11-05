@@ -1,53 +1,56 @@
-from itertools import product
-from copy import deepcopy
+from itertools import combinations
 from Board import Board
+from compute_lazor_paths import compute_lazor_paths
+from read_bff import readf_bff
+import time
 
-def solve_lazor_game(board):
+def solve_lazor_game(board, A_num, B_num, C_num, lazor_position, lazor_direction, target):
     """
-    Solves the lazor game by finding a combination of blocks that
-    allows all targets to be hit by lazor paths.
+    Solve the lazor game by testing all possible block arrangements.
 
     Parameters:
-        board (Board): An instance of the Board class with:
-        - initial lazor positions and directions.
-        - blocks map
-        - target location.
-    
+        board (Board): The initial board layout.
+        A_num (int): Number of reflective blocks available.
+        B_num (int): Number of opaque blocks available.
+        C_num (int): Number of refractive blocks available.
+        lazor_position (list): Initial lazor source positions.
+        lazor_direction (list): Initial lazor directions.
+        target (list): Target points on the board.
+
     Returns:
-        Board: Updated Board object with the solution, or None if no solution found.
+        Board: Solved board configuration, or None if no solution is found.
     """
 
-    # 找到所有空位置，即可以放置块的位置
-    empty_positions = [
-        (x, y) for y in range(board.height) for x in range(board.width)
-        if board.original_board[y][x] == 'o'
-    ]
+    start_time = time.time()
+    # 找出可以放置块的位置
+    empty_positions = [(x, y) for x in range(board.width) for y in range(board.height) if board.original_board[y][x] == 'o']
+    
+    # 遍历可能的块组合
+    for a_positions in combinations(empty_positions, A_num):
+        for b_positions in combinations([p for p in empty_positions if p not in a_positions], B_num):
+            for c_positions in combinations([p for p in empty_positions if p not in a_positions + b_positions], C_num):
+                
+                # 重置棋盘
+                board.clear_blocks()
 
-    # 获取所有可能的块类型排列组合
-    possible_blocks = ['A'] * board.A_num + ['B'] * board.B_num + ['C'] * board.C_num + ['O'] * len(empty_positions)
+                # 放置 A、B 和 C 块
+                for pos in a_positions:
+                    board.place_blocks(pos, 'A')
+                for pos in b_positions:
+                    board.place_blocks(pos, 'B')
+                for pos in c_positions:
+                    board.place_blocks(pos, 'C')
 
-    # 尝试所有排列组合
-    for block_combination in product(possible_blocks, repeat=len(empty_positions)):
-        # 只尝试有效的组合，跳过冗余的组合
-        if block_combination.count('A') == board.A_num and \
-           block_combination.count('B') == board.B_num and \
-           block_combination.count('C') == board.C_num:
+                # 计算激光路径
+                board = compute_lazor_paths(board)
 
-            # 重置棋盘
-            board.clear_blocks()
+                # 检查是否所有目标被击中
+                if board.check_targets_reached():
+                    end_time = time.time()
+                    print(f"Solution found in {end_time - start_time:.2f} seconds!")
+                    return board  # 返回解决方案
 
-            # 在棋盘上放置当前组合的块
-            for position, block_type in zip(empty_positions, block_combination):
-                if block_type != 'O':  # 只放置非空块
-                    board.place_blocks(position, block_type)
+    end_time = time.time()
+    print(f"No solution found. Execution time: {end_time - start_time:.2f} seconds.")
+    return None  # 如果没有找到解决方案
 
-            # 计算激光路径
-            compute_lazor_paths(board)
-
-            # 检查是否所有目标都被击中
-            if board.check_targets_reached():
-                print("Solution found!")
-                return board  # 找到解返回
-
-    print("No solution found.")
-    return None  # 如果没有解，则返回 None
