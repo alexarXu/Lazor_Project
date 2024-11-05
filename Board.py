@@ -191,3 +191,22 @@ class Board:
             return block_y, block_x
         else:
             return None  # Out of board boundaries
+
+    def check_targets_reached(self):
+        """
+        Checks if all target positions are hit by at least one lazor path.
+
+        Returns:
+            bool: True if all targets are reached by lazor paths, False otherwise.
+        """
+        # Get the set of target positions for quick lookup
+        target_set = set(self.target)
+
+        # Get all points that lazors pass through
+        hit_positions = set()
+        for path in self.all_lazor:
+            x0, y0, x1, y1 = path
+            hit_positions.add((x1, y1))  # Add the endpoint of each lazor segment
+
+        # Check if each target is in the hit_positions
+        return target_set.issubset(hit_positions)
