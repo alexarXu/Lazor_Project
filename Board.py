@@ -111,7 +111,7 @@ class Board:
     def place_blocks(self, position, block_type):
         
         x, y = position
-        if not (0 <= x < self.height and 0 <= y < self.width):
+        if not (0 <= y < self.height and 0 <= x < self.width):
             raise ValueError("out of border")
 
         if self.original_board[y][x] != 'o':
@@ -122,7 +122,7 @@ class Board:
         
         block = Blocks(block_type, position)  # 创建新的块对象
         self.blocks_[y][x] = block  # 更新 blocks_ 数组
-        print(f"Successfully placed block of type '{block_type}' at position {position}.")
+        #print(f"Successfully placed block of type '{block_type}' at position {position}.")
 
     def vtc_or_hrz(self, lazor):
         '''
