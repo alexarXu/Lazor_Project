@@ -35,8 +35,8 @@ def compute_lazor_paths(board):
                 board.all_lazor.append(current_lazor)
                 continue  
 
-            block_y, block_x = interact_block  # Swap x and y to match corrected coordinates
-            block = board.blocks_[block_y][block_x]  # Adjust for corrected coordinate access
+            block_y, block_x = interact_block
+            block = board.blocks_[block_y][block_x]
 
             # Execute lazor interaction and obtain resulting paths
             result_paths = block.lazor_interact(current_lazor)
@@ -52,11 +52,5 @@ def compute_lazor_paths(board):
         except ValueError as e:
             print(f"Error: {e}")
             break
-
-    # If loop exits due to reaching max steps, notify the user
-    if step_count >= max_steps:
-        print("\nReached the maximum step count while computing paths to prevent infinite loop.")
-
-    # Return the updated board with all lazor paths stored in `all_lazor`
     return board
-
+    # Return the updated board with all lazor paths stored in `all_lazor`
