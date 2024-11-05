@@ -212,3 +212,9 @@ class Board:
 
         # Check if each target is in the hit_positions
         return target_set.issubset(hit_positions)
+
+    def clear_blocks(self):
+        '''
+        clear blocks_ to default state
+        '''
+        self.blocks_ = copy.deepcopy(self.original_blocks)
