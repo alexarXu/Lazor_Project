@@ -2,7 +2,15 @@ class Blocks:
     '''
     每个block都由一个类定义
     '''
-    def __init__(self, category, position):
+    def __init__(self, category = None, position = None):
+        '''
+        category:
+        A-
+        B-
+        C-
+        O-empty
+        X-not allowed
+        '''
         self.category = category
         self.position = position
     
@@ -28,6 +36,17 @@ class Blocks:
         dy = y1 - y0
         return dx, dy
 
+    def straight_lazor(self, lazor):
+        '''
+        a lazor travels in straight
+        '''
+        x0, y0, x1, y1 = lazor
+        dx, dy = self.get_direction(lazor)
+        x0_, y0_ = x1, y1
+        x1_, y1_ = x0_ + dx, y0_ + dy
+
+        return (x0_, y0_, x1_, y1_)
+
     def reflect(self, lazor):
         x0, y0, x1, y1 = lazor
         dx, dy = self.get_direction(lazor)
@@ -39,7 +58,7 @@ class Blocks:
         x1_ = x0_ + dx
         y1_ = y0_ + dy
 
-        new_lazor = [x0_, y0_, x1_, y1_]
+        new_lazor = (x0_, y0_, x1_, y1_)
         return new_lazor
 
     def opaque(self, lazor):
@@ -49,9 +68,13 @@ class Blocks:
 
     def refract(self, lazor):
         new_lazor_1 = self.reflect(lazor)
-        return new_lazor_1
+        new_lazor_2 = self.straight_lazor(lazor)
+        return new_lazor_1, new_lazor_2
 
-    def alert():
+    def alert(self):
+        '''
+        '''
+        print("Alert: No interaction detected with the block.")
         return None
 
     def lazor_interact(self, lazor):
@@ -63,16 +86,16 @@ class Blocks:
             新的line_lazor
         '''
 
-        self.alert() #if not interact, print alert
-
-        if self.category == 'A':
-            new_lazor = self.reflect(lazor)
-        
-        elif self.category == 'B':
-            new_lazor = self.opaque(lazor)
-
-        if self.category == 'C':
-            new_lazor = self.refract(lazor)
+        if self.category == 'A':  # Reflective block
+            return [self.reflect(lazor)]  # 返回一个包含反射路径元组的列表
+        elif self.category == 'B':  # Opaque block
+            return [self.opaque(lazor)]  # 返回包含一个 None 元素的列表，表示激光被阻挡
+        elif self.category == 'C':  # Refractive block
+            return list(self.refract(lazor))  # 返回包含折射和反射路径的列表
+        elif self.category == 'O' or self.category == 'X':  # Empty space, lazor passes through unchanged
+            return [self.straight_lazor(lazor)]
+        else:
+            return [self.alert()]
 
    
 
