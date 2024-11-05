@@ -135,9 +135,9 @@ class Board:
             str: 'vertical', 'horizontal', or None if undetermined.
         '''
         x0, y0, x1, y1 = lazor
-        if x1 % 2 == 0:  
+        if y1 % 2 == 0:  
             return 'vertical'
-        elif y1 % 2 == 0: 
+        elif x1 % 2 == 0: 
             return 'horizontal'
         else:
             return None  # Diagonal or undetermined movement
@@ -160,16 +160,16 @@ class Board:
         entry_side = self.vtc_or_hrz(lazor)
         if entry_side == 'vertical':
             # Adjust block position based on vertical approach
-            if dx > 0:  # Moving down
-                block_x, block_y = x1 // 2, (y1 - 1) // 2
+            if dy > 0:  # Moving down
+                block_y, block_x = y1 // 2, (x1 - 1) // 2
             else:       # Moving up
-                block_x, block_y = x1 // 2 - 1, (y1 - 1) // 2
+                block_y, block_x = y1 // 2 - 1, (x1 - 1) // 2
         elif entry_side == 'horizontal':
             # Adjust block position based on horizontal approach
-            if dy > 0:  # Moving right
-                block_x, block_y = (x1 - 1) // 2, y1 // 2
+            if dx > 0:  # Moving right
+                block_y, block_x = (y1 - 1) // 2, x1 // 2
             else:       # Moving left
-                block_x, block_y = (x1 - 1) // 2, y1 // 2 - 1
+                block_y, block_x = (y1 - 1) // 2, x1 // 2 - 1
         else:
             raise ValueError("Lazor direction is undetermined; check vtc_or_hrz output.")
 
@@ -188,6 +188,6 @@ class Board:
 
         # Check if the block coordinates are within board boundaries
         if 0 <= block_x < self.height and 0 <= block_y < self.width:
-            return block_x, block_y
+            return block_y, block_x
         else:
             return None  # Out of board boundaries
