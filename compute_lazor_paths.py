@@ -5,11 +5,15 @@ def compute_lazor_paths(board):
     Computes all possible lazor paths on the given board.
     
     Parameters:
-        board (Board): An instance of the Board class with initial lazor positions and directions.
+        board (Board): An instance of the Board class with:
+        - initial lazor positions and directions.
+        - blocks map
+        - target location.
         
     Returns:
         Board: Updated Board object with computed lazor paths stored in `board.all_lazor`.
     """
+    
     # Initialize lazor tracking queue with the initial lazor segments
     lazor_queue = list(board.initial_lazor)
     max_steps = 100
@@ -31,8 +35,8 @@ def compute_lazor_paths(board):
                 board.all_lazor.append(current_lazor)
                 continue  
 
-            block_x, block_y = interact_block
-            block = board.blocks_[block_x][block_y]
+            block_y, block_x = interact_block  # Swap x and y to match corrected coordinates
+            block = board.blocks_[block_y][block_x]  # Adjust for corrected coordinate access
 
             # Execute lazor interaction and obtain resulting paths
             result_paths = block.lazor_interact(current_lazor)
@@ -55,3 +59,4 @@ def compute_lazor_paths(board):
 
     # Return the updated board with all lazor paths stored in `all_lazor`
     return board
+
