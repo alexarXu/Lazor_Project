@@ -13,7 +13,7 @@ class Board:
 
     '''
 
-    def __init__(self, orignal_board):
+    def __init__(self, orignal_board, A_num, B_num, C_num):
         self.original_board = orignal_board
         self.height = len(self.original_board) 
         self.width = len(self.original_board[0])
@@ -29,6 +29,8 @@ class Board:
         self.initial_lazor = [] #初始的激光段,不允许在这一块放置block
         
         self.target = []
+        self.A_num, self.B_num, self.C_num = A_num, B_num, C_num
+
 
     def board_transfer(self):
         '''
@@ -112,14 +114,14 @@ class Board:
         if not (0 <= x < self.height and 0 <= y < self.width):
             raise ValueError("out of border")
 
-        if self.original_board[x][y] != 'o':
+        if self.original_board[y][x] != 'o':
             raise ValueError(f"position {position} is already taken")
         
-        if isinstance(self.original_blocks[x][y], Blocks) and self.original_blocks[x][y].category != 'O':
-            raise ValueError(f"Position {position} is already occupied by {self.original_blocks[x][y].category}.")
+        if isinstance(self.original_blocks[y][x], Blocks) and self.original_blocks[y][x].category != 'O':
+            raise ValueError(f"Position {position} is already occupied by {self.original_blocks[y][x].category}.")
         
         block = Blocks(block_type, position)  # 创建新的块对象
-        self.blocks_[x][y] = block  # 更新 blocks_ 数组
+        self.blocks_[y][x] = block  # 更新 blocks_ 数组
         print(f"Successfully placed block of type '{block_type}' at position {position}.")
 
     def vtc_or_hrz(self, lazor):
