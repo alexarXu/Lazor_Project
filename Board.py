@@ -1,7 +1,17 @@
+from Blocks import Blocks
+
 class Board:
+
+
+
     '''
     Store the board as a class
     lazors are stored in single unit in the format of (x0, y0, x1, y1)
+    
+    There are two grids:
+    1- m*n to store blocks
+    2- (2m-1) *(2n-1) to store lazor and target
+
 
     '''
 
@@ -11,7 +21,12 @@ class Board:
         self.width = len(self.original_board[0])
 
         self.board_dic = self.board_transfer()
-        self.blocks_ = self.add_original_blocks()
+        
+        #where the blocks are stored in
+        self.original_blocks = self.add_original_blocks()
+        #deep copy a block map to store the new map with blocks solutions
+        self.blocks_ = [row[:] for row in self.original_blocks]
+
         self.all_lazor = []
         self.inital_lazor = [] #初始的激光段,不允许在这一块放置block
         
@@ -28,25 +43,18 @@ class Board:
 
         return board_dic
 
-    def add_original_blocks(self):
-        blocks_ = [[0 for _ in range(self.width)] for _ in range(self.height)]
-        for r in range(self.height):
-            for c in range(self.width):
-                # Map 'o' to None and 'x' to 0
-                if self.original_board[r][c] == 'o':
-                    blocks_[r][c] = 1
-                elif self.original_board[r][c] == 'x':
-                    blocks_[r][c] = 0
-        return blocks_
-
+    
     def display_board(self):
-        '''
-        Display the board for debugging or gameplay purposes.
-        '''
-        for row in self.board_dic:
-            print(" | ".join(f"{cell['lazor_status']}" for cell in row))
-            print("-" * (self.width * 4))  # Adjust for visual separation
+        """
+        Display the current blocks_ layout for debugging or gameplay purposes.
+        """
+        print("\nCurrent Block Layout:")
+        for row in self.blocks_:
+        # 逐行打印每个块的类别
+            print(" | ".join(f"{block.category}" for block in row))
+            print("-" * (self.width * 4))  # 使用分隔线分隔行
 
+            
     def add_lazor(self, x0, y0, x1, y1):
         '''
         append new lazor to the tuple 'all_lazor' that store all the lazors
@@ -75,3 +83,43 @@ class Board:
             x, y = target[index]
 
             self.target.append((x, y))
+
+    def add_original_blocks(self):
+        '''
+        
+        '''
+        # board = self.original_board
+        # blocks = [[Blocks(position=(r, c)) for c in range(self.width)] for r in range(self.height)]
+        blocks = []
+        for r in range(self.height):
+            row = []
+            for c in range(self.width):
+                char = self.original_board[r][c]
+                if char == 'x':
+                    block = Blocks(category="X", position=(r, c))
+                elif char == 'o':
+                    block = Blocks(category="O", position=(r, c))
+                elif char in ['A', 'B', 'C']:
+                    block = Blocks(category=char, position=(r, c))
+                else:
+                    block = Blocks(category="O", position=(r, c))
+                row.append(block)
+            blocks.append(row)
+        return blocks
+
+
+    def place_blocks(self, position, block_type):
+        
+        x, y = position
+        if not (0 <= x < self.height and 0 <= y < self.width):
+            raise ValueError("out of border")
+
+        if self.original_board[x][y] != 'o':
+            raise ValueError(f"position {position} is already taken")
+        
+        if isinstance(self.original_blocks[x][y], Blocks) and self.original_blocks[x][y].category != 'O':
+            raise ValueError(f"Position {position} is already occupied by {self.original_blocks[x][y].category}.")
+        
+        block = Blocks(block_type, position)  # 创建新的块对象
+        self.blocks_[x][y] = block  # 更新 blocks_ 数组
+        print(f"Successfully placed block of type '{block_type}' at position {position}.")
