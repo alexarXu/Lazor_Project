@@ -13,7 +13,7 @@ class Board:
 
     '''
 
-    def __init__(self, orignal_board, A_num, B_num, C_num):
+    def __init__(self, orignal_board, A_num, B_num, C_num, lazor_position, lazor_direction):
         self.original_board = orignal_board
         self.height = len(self.original_board) 
         self.width = len(self.original_board[0])
@@ -26,7 +26,7 @@ class Board:
         self.blocks_ = copy.deepcopy(self.original_blocks)
 
         self.all_lazor = []
-        self.initial_lazor = [] #初始的激光段,不允许在这一块放置block
+        self.initial_lazor = []
         
         self.target = []
         self.A_num, self.B_num, self.C_num = A_num, B_num, C_num
@@ -66,17 +66,6 @@ class Board:
         
         '''
         self.all_lazor.pop()
-
-    def get_original_lazor(self, lazor_position, lazor_direction):
-        '''
-        calculate the initial lazor unit from the given lazor source
-        '''
-        for index in range(len(lazor_position)):
-            x0, y0 = lazor_position[index]
-            dx, dy = lazor_direction[index]
-            x1, y1 = x0 + dx, y0 + dy
-
-            self.initial_lazor.append((x0, y0, x1, y1))
 
     def push_target(self, target):
         for index in range(len(target)):
@@ -122,7 +111,7 @@ class Board:
         
         block = Blocks(block_type, position)  # 创建新的块对象
         self.blocks_[y][x] = block  # 更新 blocks_ 数组
-        #print(f"Successfully placed block of type '{block_type}' at position {position}.")
+        # print(f"Successfully placed block of type '{block_type}' at position {position}.")
 
     def vtc_or_hrz(self, lazor):
         '''
@@ -209,6 +198,7 @@ class Board:
         for path in self.all_lazor:
             x0, y0, x1, y1 = path
             hit_positions.add((x1, y1))  # Add the endpoint of each lazor segment
+            hit_positions.add((x0, y0))
 
         # Check if each target is in the hit_positions
         return target_set.issubset(hit_positions)
@@ -218,3 +208,58 @@ class Board:
         clear blocks_ to default state
         '''
         self.blocks_ = copy.deepcopy(self.original_blocks)
+    
+
+    def generate_initial_lazor(self, lazor_position, lazor_direction):
+        '''
+        '''
+        px, py  = lazor_position
+        dx, dy = lazor_direction
+
+        #calculate the block to be interact with the lazor
+        if px % 2 == 0: #from left or right side
+            if dx > 0: 
+                block_x = px // 2
+                block_y = (py - 1) // 2
+            else:
+                block_x = px // 2 - 1
+                block_y = (py - 1) // 2
+        else: #from upper and bottom side
+            if dy > 0:
+                block_y = py // 2
+                block_x = (px - 1) // 2
+            else:
+                block_y = py // 2 - 1
+                block_x = (px - 1) // 2
+
+        current_block = self.blocks_[block_y][block_x]
+
+        type = current_block.category
+        if type == 'A':
+            if px % 2 == 0:
+                dx_ = -dx
+                px_, py_ = px + dx_, py +dy
+            else:
+                dy_ = -dy
+                px_, py_ = px + dx, py + dy_
+            self.initial_lazor.append((px, py, px_, py_))
+
+        if type == 'C':
+            if px % 2 == 0:
+                dx_ = -dx
+                px_, py_ = px + dx_, py +dy
+            else:
+                dy_ = -dy
+                px_, py_ = px + dx, py + dy_
+            self.initial_lazor.append((px, py, px_, py_))
+            px_, py_ = px + dx, py + dy
+            self.initial_lazor.append((px, py, px_, py_))
+        
+
+
+
+
+
+
+
+        
