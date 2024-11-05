@@ -187,7 +187,7 @@ class Board:
         #         raise ValueError(f"Unexpected lazor direction ({dx}, {dy}).")
 
         # Check if the block coordinates are within board boundaries
-        if 0 <= block_x < self.height and 0 <= block_y < self.width:
+        if 0 <= block_y < self.height and 0 <= block_x < self.width:
             return block_y, block_x
         else:
             return None  # Out of board boundaries
