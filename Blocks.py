@@ -5,9 +5,9 @@ class Blocks:
     def __init__(self, category = None, position = None):
         '''
         category:
-        A-
-        B-
-        C-
+        A- reflect
+        B- opaque
+        C- refract
         O-empty
         X-not allowed
         '''
@@ -21,9 +21,9 @@ class Blocks:
             2- left and right side: horizonal(False)
         '''
         x0, y0, x1, y1 = lazor
-        if y1 // 2 == 0:
+        if x1 % 2 == 0:
             flag = 'vertical'
-        elif x1 // 2 == 0:
+        elif y1 % 2 == 0:
             flag = 'horizonal'
         else:
             flag = None
@@ -52,9 +52,9 @@ class Blocks:
         dx, dy = self.get_direction(lazor)
         x0_, y0_ = x1, y1 #new lazor
         if self.vtc_or_hrz(lazor) == 'vertical':
-            dy = 0 - dy
-        elif self.vtc_or_hrz(lazor) == 'horizonal':
             dx = 0 - dx
+        elif self.vtc_or_hrz(lazor) == 'horizonal':
+            dy = 0 - dy
         x1_ = x0_ + dx
         y1_ = y0_ + dy
 
@@ -76,6 +76,7 @@ class Blocks:
         '''
         print("Alert: No interaction detected with the block.")
         return None
+
 
     def lazor_interact(self, lazor):
         '''
