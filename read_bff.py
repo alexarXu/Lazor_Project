@@ -34,6 +34,7 @@ def readf_bff(file_path):
         A_num = 0
         B_num = 0
         C_num = 0
+        lazor_info = []
         lazor_position = []
         lazor_direction = []
         target = []
@@ -63,6 +64,7 @@ def readf_bff(file_path):
                 if len(lazor) == 5:
                     lazor_position.append([int(lazor[1]), int(lazor[2])])
                     lazor_direction.append([int(lazor[3]), int(lazor[4])])
+                    lazor_info.append([int(lazor[1]), int(lazor[2]), int(lazor[3]), int(lazor[4])])
                 else:
                     print("Invalid lazor setting! Please check the .bff file.")
         # read the target points
@@ -117,7 +119,7 @@ def readf_bff(file_path):
             if grid[i][j] not in valid_chars:
                 print(f'Invalid character "{grid[i][j]}" at ({j}, {i}) in the grid!')
 
-    return original_board, grid, A_num, B_num, C_num, lazor_position, lazor_direction, target
+    return grid, A_num, B_num, C_num, lazor_info, target, original_board
 
 
 # if __name__ == "__main__":
