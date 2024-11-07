@@ -39,7 +39,7 @@ class Blocks:
 
     def get_direction(self, lazor):
         """
-        Calculates the direction vector of the lazor.
+        Calculates the direction of the lazor.
 
         """
         x0, y0, x1, y1 = lazor
@@ -51,11 +51,7 @@ class Blocks:
         """
         Lazor goes in straight line if no block to interact
 
-        Parameters:
-            lazor (tuple): Lazor unit in the format (x0, y0, x1, y1).
 
-        Returns:
-            tuple: New lazor in the format (x0_, y0_, x1_, y1_).
         """
         x0, y0, x1, y1 = lazor
         dx, dy = self.get_direction(lazor)
@@ -67,11 +63,7 @@ class Blocks:
         """
         Reflects the lazor off the block.
 
-        Parameters:
-            lazor (tuple): Lazor segment coordinates in the format (x0, y0, x1, y1).
-
-        Returns:
-            tuple: New lazor coordinates after reflection.
+        
         """
         x0, y0, x1, y1 = lazor
         dx, dy = self.get_direction(lazor)
