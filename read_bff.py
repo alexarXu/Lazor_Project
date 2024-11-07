@@ -18,6 +18,8 @@ def readf_bff(file_path):
     ***Parameters***
     file_path: str, the path of the .bff file.
     ***Return***
+    original_board: 2D list, the board of the game.
+    grid: 2D list, the grid of the game.
     board: 2D list, the board of the game.
     A_num: int, the number of the reflect blocks.
     B_num: int, the number of the opaque blocks.
