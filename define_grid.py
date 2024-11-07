@@ -18,4 +18,3 @@ class Grid(object):
                     if self.original_grid[row][column] != 'x':
                         self.original_grid[row][column] = list_grid.pop(0)
         return self.original_grid
-
