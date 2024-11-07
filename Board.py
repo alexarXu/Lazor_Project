@@ -1,84 +1,77 @@
+
 from Blocks import Blocks
 import copy
 
 class Board:
     '''
-    Store the board as a class
-    lazors are stored in single unit in the format of (x0, y0, x1, y1)
+    Store the board as a class.
+    Lazors are stored in single units in the format of (x0, y0, x1, y1).
     
-    There are two grids:
+    There are two coordinate systems:
     1- m*n to store blocks
     2- (2m-1) *(2n-1) to store lazor and target
 
-
+    Blocks are stored in the attribute self.blocks_ as instances of the `Blocks` class.
     '''
 
-    def __init__(self, orignal_board, A_num, B_num, C_num, lazor_position, lazor_direction):
-        self.original_board = orignal_board
+    def __init__(self, original_board, A_num, B_num, C_num, lazor_position, lazor_direction, target):
+        self.original_board = original_board
         self.height = len(self.original_board) 
         self.width = len(self.original_board[0])
-
-        self.board_dic = self.board_transfer()
         
-        #where the blocks are stored in
+        # Initialize blocks and lazor-related attributes
         self.original_blocks = self.add_original_blocks()
-        #deep copy a block map to store the new map with blocks solutions
         self.blocks_ = copy.deepcopy(self.original_blocks)
 
-        self.all_lazor = []
-        self.initial_lazor = []
-        
-        self.target = []
+        self.all_lazor = []  # Stores all lazor paths
+        self.initial_lazor = []  # Initial lazor segments
+
+        # Assign lazor positions, directions, and targets directly from parameters
+        self.lazor_position = lazor_position
+        self.lazor_direction = lazor_direction
+        self.target = target
+
+        # Number of each block type
         self.A_num, self.B_num, self.C_num = A_num, B_num, C_num
 
-
-    def board_transfer(self):
-        '''
-        transfer the board from full a o and x into a list
-        '''
-        #calculate the size of board
-        height = 2 * self.height + 1
-        width = 2 * self.width + 1
-        board_dic = [[{'lazor_status': None, 'block_status': None} for _ in range(width)] for _ in range(height)]
-
-        return board_dic
-
+        # Generate the initial lazor path
+        self.generate_initial_lazor()\
     
+    def vtc_or_hrz(self, lazor):
+        '''
+        Identify the side from which the lazor approaches:
+            - 'vertical' if it comes from the top or bottom side.
+            - 'horizontal' if it comes from the left or right side.
+        
+        '''
+        x0, y0, x1, y1 = lazor
+        if y1 % 2 == 0:  
+            return 'vertical'
+        elif x1 % 2 == 0: 
+            return 'horizontal'
+        else:
+            return None  
+    
+
     def display_board(self):
         """
-        Display the current blocks_ layout for debugging or gameplay purposes.
+        Display the current blocks_ layout for debugging.
         """
         print("\nCurrent Block Layout:")
         for row in self.blocks_:
-        # 逐行打印每个块的类别
             print(" | ".join(f"{block.category}" for block in row))
-            print("-" * (self.width * 4))  # 使用分隔线分隔行
-
+            print("-" * (self.width * 4))  
             
     def add_lazor(self, x0, y0, x1, y1):
         '''
-        append new lazor to the tuple 'all_lazor' that store all the lazors
+        Append new lazor to the list 'all_lazor' that stores all the lazors.
         '''
         self.all_lazor.append((x0, y0, x1, y1))
-    
-    def pop_lazor(self):
-        '''
-        
-        '''
-        self.all_lazor.pop()
-
-    def push_target(self, target):
-        for index in range(len(target)):
-            x, y = target[index]
-
-            self.target.append((x, y))
 
     def add_original_blocks(self):
         '''
-        
+        Use the original board information to create blocks instances and store them in self.blocks_.
         '''
-        # board = self.original_board
-        # blocks = [[Blocks(position=(r, c)) for c in range(self.width)] for r in range(self.height)]
         blocks = []
         for r in range(self.height):
             row = []
@@ -96,88 +89,103 @@ class Board:
             blocks.append(row)
         return blocks
 
-
     def place_blocks(self, position, block_type):
-        
+        '''
+        Place blocks at a given location.
+        '''
         x, y = position
         if not (0 <= y < self.height and 0 <= x < self.width):
-            raise ValueError("out of border")
+            raise ValueError("Out of border")
 
         if self.original_board[y][x] != 'o':
-            raise ValueError(f"position {position} is already taken")
+            raise ValueError(f"Position {position} is already taken")
         
         if isinstance(self.original_blocks[y][x], Blocks) and self.original_blocks[y][x].category != 'O':
             raise ValueError(f"Position {position} is already occupied by {self.original_blocks[y][x].category}.")
         
-        block = Blocks(block_type, position)  # 创建新的块对象
-        self.blocks_[y][x] = block  # 更新 blocks_ 数组
-        # print(f"Successfully placed block of type '{block_type}' at position {position}.")
+        block = Blocks(block_type, position) 
+        self.blocks_[y][x] = block  
 
-    def vtc_or_hrz(self, lazor):
+    def generate_initial_lazor(self):
         '''
-        Identify the side from which the lazor approaches:
-            - 'vertical' if it comes from the top or bottom side.
-            - 'horizontal' if it comes from the left or right side.
-        
-        Parameters:
-            lazor (tuple): Current lazor segment coordinates in the format (x0, y0, x1, y1)
-        
-        Returns:
-            str: 'vertical', 'horizontal', or None if undetermined.
+        Generate the initial lazor paths from the starting positions and directions.
         '''
-        x0, y0, x1, y1 = lazor
-        if y1 % 2 == 0:  
-            return 'vertical'
-        elif x1 % 2 == 0: 
-            return 'horizontal'
-        else:
-            return None  # Diagonal or undetermined movement
+        for (px, py), (dx, dy) in zip(self.lazor_position, self.lazor_direction):
+            # Calculate the block to interact with the lazor initially
+            if px % 2 == 0:  # From left or right side
+                if dx > 0: 
+                    block_x = px // 2
+                    block_y = (py - 1) // 2
+                else:
+                    block_x = px // 2 - 1
+                    block_y = (py - 1) // 2
+            else:  # From upper or bottom side
+                if dy > 0:
+                    block_y = py // 2
+                    block_x = (px - 1) // 2
+                else:
+                    block_y = py // 2 - 1
+                    block_x = (px - 1) // 2
+
+            current_block = self.blocks_[block_y][block_x]
+            type = current_block.category
+
+            if type == 'A':
+                if px % 2 == 0:
+                    dx_ = -dx
+                    px_, py_ = px + dx_, py + dy
+                else:
+                    dy_ = -dy
+                    px_, py_ = px + dx, py + dy_
+                self.initial_lazor.append((px, py, px_, py_))
+
+            elif type == 'C':
+                if px % 2 == 0:
+                    dx_ = -dx
+                    px_, py_ = px + dx_, py + dy
+                else:
+                    dy_ = -dy
+                    px_, py_ = px + dx, py + dy_
+                self.initial_lazor.append((px, py, px_, py_))
+                px_, py_ = px + dx, py + dy
+                self.initial_lazor.append((px, py, px_, py_))
+            
+            elif type == 'O' or type == 'X':
+                self.initial_lazor.append((px, py, px + dx, py + dy))
+
+    def clear_blocks(self):
+        '''
+        clear blocks_ to default state
+        '''
+        self.blocks_ = copy.deepcopy(self.original_blocks)
 
     def get_interact_block(self, lazor):
         '''
-        Determine the coordinates of the block interacting with the lazor segment,
+        Determine the position of the block interacting with the lazor segment,
         based on the direction of the lazor and entry side.
         
-        Parameters:
-            lazor (tuple): The current lazor segment coordinates in the format (x0, y0, x1, y1)
 
         Returns:
             tuple: (block_x, block_y) representing the coordinates of the interacting block
         '''
         x0, y0, x1, y1 = lazor
-        dx, dy = x1 - x0, y1 - y0  # Calculate direction
+        dx, dy = x1 - x0, y1 - y0  
 
         # Determine block based on lazor direction and entry side
         entry_side = self.vtc_or_hrz(lazor)
         if entry_side == 'vertical':
-            # Adjust block position based on vertical approach
-            if dy > 0:  # Moving down
+            if dy > 0:  
                 block_y, block_x = y1 // 2, (x1 - 1) // 2
-            else:       # Moving up
+            else:      
                 block_y, block_x = y1 // 2 - 1, (x1 - 1) // 2
         elif entry_side == 'horizontal':
-            # Adjust block position based on horizontal approach
-            if dx > 0:  # Moving right
+            if dx > 0:  
                 block_y, block_x = (y1 - 1) // 2, x1 // 2
-            else:       # Moving left
+            else:       
                 block_y, block_x = (y1 - 1) // 2, x1 // 2 - 1
         else:
             raise ValueError("Lazor direction is undetermined; check vtc_or_hrz output.")
 
-        # else:
-        #     # If undetermined, use diagonal movement rules
-        #     if dx == 1 and dy == 1:
-        #         block_x, block_y = (x1 - 1) // 2, (y1 - 1) // 2
-        #     elif dx == -1 and dy == -1:
-        #         block_x, block_y = (x1 + 1) // 2, (y1 + 1) // 2
-        #     elif dx == 1 and dy == -1:
-        #         block_x, block_y = (x1 - 1) // 2, (y1 + 1) // 2
-        #     elif dx == -1 and dy == 1:
-        #         block_x, block_y = (x1 + 1) // 2, (y1 - 1) // 2
-        #     else:
-        #         raise ValueError(f"Unexpected lazor direction ({dx}, {dy}).")
-
-        # Check if the block coordinates are within board boundaries
         if 0 <= block_y < self.height and 0 <= block_x < self.width:
             return block_y, block_x
         else:
@@ -188,7 +196,7 @@ class Board:
         Checks if all target positions are hit by at least one lazor path.
 
         Returns:
-            bool: True if all targets are reached by lazor paths, False otherwise.
+            bool: True if all targets are reached
         """
         # Get the set of target positions for quick lookup
         target_set = set(self.target)
@@ -202,62 +210,6 @@ class Board:
 
         # Check if each target is in the hit_positions
         return target_set.issubset(hit_positions)
-
-    def clear_blocks(self):
-        '''
-        clear blocks_ to default state
-        '''
-        self.blocks_ = copy.deepcopy(self.original_blocks)
-    
-
-    def generate_initial_lazor(self, lazor_position, lazor_direction):
-        '''
-        '''
-        px, py  = lazor_position
-        dx, dy = lazor_direction
-
-        #calculate the block to be interact with the lazor
-        if px % 2 == 0: #from left or right side
-            if dx > 0: 
-                block_x = px // 2
-                block_y = (py - 1) // 2
-            else:
-                block_x = px // 2 - 1
-                block_y = (py - 1) // 2
-        else: #from upper and bottom side
-            if dy > 0:
-                block_y = py // 2
-                block_x = (px - 1) // 2
-            else:
-                block_y = py // 2 - 1
-                block_x = (px - 1) // 2
-
-        current_block = self.blocks_[block_y][block_x]
-
-        type = current_block.category
-        if type == 'A':
-            if px % 2 == 0:
-                dx_ = -dx
-                px_, py_ = px + dx_, py +dy
-            else:
-                dy_ = -dy
-                px_, py_ = px + dx, py + dy_
-            self.initial_lazor.append((px, py, px_, py_))
-
-        if type == 'C':
-            if px % 2 == 0:
-                dx_ = -dx
-                px_, py_ = px + dx_, py +dy
-            else:
-                dy_ = -dy
-                px_, py_ = px + dx, py + dy_
-            self.initial_lazor.append((px, py, px_, py_))
-            px_, py_ = px + dx, py + dy
-            self.initial_lazor.append((px, py, px_, py_))
-        
-
-
-
 
 
 

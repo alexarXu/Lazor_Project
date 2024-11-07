@@ -406,7 +406,7 @@ def main():
         # 输出结果
         if solved_board:
             print(f"\n{bff_file} solved in {duration:.2f} seconds.")
-            solved_board.display_board()
+            # solved_board.display_board()
         else:
             print(f"{bff_file} could not be solved within the given constraints. Took {duration:.2f} seconds.")
     
