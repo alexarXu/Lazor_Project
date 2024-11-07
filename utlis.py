@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def find_block_positions(grid):
+def find_block_positions(board):
     '''
     This function finds the positions of the blocks in the grid.
     ***Parameters***
@@ -10,9 +10,9 @@ def find_block_positions(grid):
     block_positions: list, the positions of the blocks in the grid.
     '''
     block_positions = []
-    for i in range(len(grid)):
-        for j in range(len(grid[0])):
-            block = grid[i][j]
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            block = board[i][j]
             if block in ['A', 'B', 'C','D']:
                 block_positions.append([i * 2 + 1, j * 2 + 1])
     return block_positions
