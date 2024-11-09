@@ -1,7 +1,7 @@
-import copy
-import time
+'''
+This file contains the visualization function to generate the image output of the solved board.
+'''
 from PIL import ImageDraw, Image
-from sympy.utilities.iterables import multiset_permutations
 
 def solution_color():
     '''
