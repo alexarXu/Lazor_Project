@@ -39,12 +39,13 @@ def faster_trick_skip(grid, possibles, lst, target_points):
     for i in range(len(target_points)):
         x = target_points[i][1]
         y = target_points[i][0]
-        if ((grid[x][y + 1] in ['A', 'B', 'C', 'D']) and (grid[x][y - 1] in ['A', 'B', 'C', 'D'])) or \
-                ((grid[x + 1][y] in ['A', 'B', 'C', 'D']) and (grid[x - 1][y] in ['A', 'B', 'C', 'D'])):
+        if ((grid[x][y + 1] in ['A', 'B']) and (grid[x][y - 1] in ['A', 'B'])) or \
+                ((grid[x + 1][y] in ['A', 'B']) and (grid[x - 1][y] in ['A', 'B'])):
             return False
         else:
             return True
         
+
 def check_if_the_point_in_grid(point, grid):
     '''
     This function checks if the point is in the grid.
@@ -58,3 +59,27 @@ def check_if_the_point_in_grid(point, grid):
     row = len(grid)
     if not (0 <= point[0] <= column * 2 and 0 <= point[1] <= row * 2):
         return False
+
+
+def multiset_permutations_subs(iterable):
+    '''
+    This function generates the multiset permutations of the iterable.
+    It is the same as sympy.utilities.iterables.multiset_permutations but without the sympy dependency.
+    It can also be used to generate the permutations of the elements in the list.
+    ***Parameters***
+    iterable: list, the list to be permuted.
+    ***Returns***
+    The multiset permutations of the iterable.
+    '''
+    def permute_unique(elements):
+        if len(elements) <= 1:
+            yield elements
+        else:
+            unique_elements = set(elements)
+            for first_element in unique_elements:
+                remaining_elements = list(elements)
+                remaining_elements.remove(first_element)
+                for sub_permutation in permute_unique(remaining_elements):
+                    yield [first_element] + sub_permutation
+
+    return permute_unique(sorted(iterable))

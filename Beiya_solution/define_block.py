@@ -1,3 +1,6 @@
+'''
+This file defines the block class.
+'''
 class Block:
     def __init__(self, block_type):
         self.type = block_type
