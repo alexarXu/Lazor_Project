@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
-from utlis import check_if_the_point_in_grid
+from .utlis import check_if_the_point_in_grid
 
 def readf_bff(file_path):
     '''

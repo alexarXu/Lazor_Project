@@ -1,5 +1,5 @@
-from define_block import Block
-from utlis import *
+from .define_block import Block
+from .utlis import *
 
 class Lazor:
     def __init__(self, grid, lazor_list, target_list):

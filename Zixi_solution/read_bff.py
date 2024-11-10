@@ -1,5 +1,5 @@
 
-from Board import Board
+from .Board import Board
 
 def readf_bff(file_path):
     '''

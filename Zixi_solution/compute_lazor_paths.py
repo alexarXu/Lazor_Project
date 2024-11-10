@@ -1,4 +1,4 @@
-from Board import Board
+from .Board import Board
 
 def compute_lazor_paths(board):
     """

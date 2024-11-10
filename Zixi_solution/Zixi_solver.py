@@ -1,8 +1,8 @@
 
 from itertools import combinations
-from Board import Board
-from compute_lazor_paths import compute_lazor_paths
-from read_bff import readf_bff
+from .Board import Board
+from .compute_lazor_paths import compute_lazor_paths
+from .read_bff import readf_bff
 
 def solve_lazor_game(board):
     """

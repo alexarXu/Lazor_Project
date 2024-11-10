@@ -1,13 +1,16 @@
+'''
+
+'''
 import copy
 import time 
 from PIL import ImageDraw, Image
 from sympy.utilities.iterables import multiset_permutations
 
-from read_bff import readf_bff
-from define_grid import Grid
-from define_lazor import Lazor
-from utlis import *
-from board_visualization import image_output
+from .read_bff import readf_bff
+from .define_grid import Grid
+from .define_lazor import Lazor
+from .utlis import *
+from .board_visualization import image_output
 
 def path_seek(grid, A_num, B_num, C_num, lazor_list, target_list, position):
     blocks = []
@@ -30,7 +33,7 @@ def path_seek(grid, A_num, B_num, C_num, lazor_list, target_list, position):
         blocks_temp_save = copy.deepcopy(blocks_temp)
         block_permutations.pop()
         # Generate a board from the grid function
-        print(grid)
+        # print(grid)
         original_grid = Grid(grid)
         test_board = original_grid.generate_grid(blocks_temp, position)
         # print(position)
@@ -53,14 +56,14 @@ def beiya_solver(fptr):
     num_rows = data[2]
     num_holes = data[3]
     lazors = data[4]
-    holes = data[5]
+    targets = data[5]
     small_grid = data[6]
-    print(data)
+    # print(data)
     # Find the positions of the occupied spots in the grid
     occupied_spots = find_block_positions(small_grid)
-    print(occupied_spots)
+    # print(occupied_spots)
     # Solve the puzzle and find the path of the lazors
-    solution, lazor_path = path_seek(grid, num_cols, num_rows, num_holes, lazors, holes, occupied_spots)[:2]
+    solution, lazor_path = path_seek(grid, num_cols, num_rows, num_holes, lazors, targets, occupied_spots)[:2]
 
     # Create a new grid with the lazors and holes
     new_grid = copy.deepcopy(small_grid)
@@ -73,32 +76,31 @@ def beiya_solver(fptr):
 
     # Generate output image
     image_output(solved_board=new_grid, answer_lazor=solution, lazor_info=lazors,
-                 targets=holes, filename=fptr)
-    output_filename = '.'.join(fptr.split('.')[0:-1])
-    print('The puzzle has been solved and saved as {}'.format(
-        output_filename + '_solved.png'))
+                 targets=targets, filename=fptr)
     return new_grid, solution, lazor_path
 
-if __name__ == "__main__":
-    # 替换为你的 .bff 文件路径
-    bff_file_path = "C:/Users/administer/Desktop/SC/Lazor_Project/bff_files/dark_1.bff"
+# if __name__ == "__main__":
+#     # Define the path of the .bff file
+#     bff_file_path = "C:/Users/administer/Desktop/SC/Lazor_Project/bff_files/dark_1.bff"
     
-    # 调用beiya_solver函数并打印结果
-    time_start = time.time()
-    updated_grid, solution, lazor_path = beiya_solver(bff_file_path)
-    time_end = time.time()
-    print('Time cost:', time_end - time_start, 's')
+#     # Solve the puzzle
+#     time_start = time.time()
+#     updated_grid, solution, lazor_path = beiya_solver(bff_file_path)
+#     time_end = time.time()
+#     print('Time cost:', time_end - time_start, 's')
+#     print('The puzzle has been solved!')
 
-    if updated_grid is not None:
-        print("Updated Grid:")
-        for row in updated_grid:
-            print(row)
+
+    # if updated_grid is not None:
+    #     print("Updated Grid:")
+    #     for row in updated_grid:
+    #         print(row)
         
-        print("\nSolution:")
-        print(solution)
+    #     print("\nSolution:")
+    #     print(solution)
         
-        print("\nLazor Path:")
-        for path in lazor_path:
-            print(path)
-    else:
-        print("No solution found.")
+    #     print("\nLazor Path:")
+    #     for path in lazor_path:
+    #         print(path)
+    # else:
+    #     print("No solution found.")

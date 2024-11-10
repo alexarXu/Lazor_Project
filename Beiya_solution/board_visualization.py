@@ -1,5 +1,6 @@
 '''
 This file contains the visualization function to generate the image output of the solved board.
+The idea is that the function will draw the blocks, lazors, lazor paths, and targets on the image.
 '''
 from PIL import ImageDraw, Image
 
@@ -108,7 +109,7 @@ def draw_targets(img_new, targets, block_size):
     for target in targets:
         x, y = target[0] * block_size / 2, target[1] * block_size / 2
         coordinates = (x - 10, y - 10, x + 10, y + 10)
-        img_new.ellipse(coordinates, fill=(255, 255, 255), outline="red", width=2)
+        img_new.ellipse(coordinates, fill=(0, 0, 0), outline="red", width=2)
 
 def image_output(solved_board, answer_lazor, lazor_info, targets, filename, block_size=50):
     '''
@@ -137,7 +138,7 @@ def image_output(solved_board, answer_lazor, lazor_info, targets, filename, bloc
     draw_targets(img_new, targets, block_size)
 
     if not filename.endswith(".png"):
-        filename = '.'.join(filename.split(".")[0:-1]) + "_solved.png"
+        filename = '.'.join(filename.split(".")[0:-1]) + "_solution.png"
 
     img.save(filename)
     img.show()  # Show the image

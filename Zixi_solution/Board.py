@@ -1,5 +1,5 @@
 
-from Blocks import Blocks
+from .Blocks import Blocks
 import copy
 
 class Board:

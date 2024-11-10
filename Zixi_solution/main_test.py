@@ -1,7 +1,7 @@
 
-from Board import Board
-from solver import solve_lazor_game
-from read_bff import readf_bff
+from .Board import Board
+from .Zixi_solver import solve_lazor_game
+from .read_bff import readf_bff
 import os
 import time
 
