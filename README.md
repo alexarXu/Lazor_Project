@@ -3,7 +3,10 @@ This repo contains the codes of the Lazor project from Software Carpentry Class.
 
 ## How to use the project?
 To get the solutions of the Lazor boards, you just need to input a .bff file,
-- Then! The solution will be magically displayed! (in two formats)
+- Then! The solution will be magically displayed! (in two formats)/
+All you need is to make your own .bff file, then store in a specific file./
+And then input your folder path in the main.py for detecting all the .bff files /
+- Then! Just wait for the solutions!
 
 ## What is a .bff file?
 .bff file is a kind of setting files that you need to describe the Lazor settings.\
