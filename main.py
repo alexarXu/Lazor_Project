@@ -25,7 +25,7 @@ def main():
         end_time = time.time()
         duration = end_time - start_time
         if solution != 0:
-            print(f"\n{bff_file} solved in {duration:.2f} seconds.")
+            print(f"{bff_file} solved in {duration:.2f} seconds.")
         else:
             print(f"{bff_file} could not be solved. Took {duration:.2f} seconds.")
 
@@ -40,7 +40,7 @@ def main():
         duration = end_time - start_time
         # Output results
         if solved_board_zixi:
-            print(f"\n{bff_file} solved in {duration:.2f} seconds.")
+            print(f"{bff_file} solved in {duration:.2f} seconds.")
             solved_board_zixi.display_board()
         else:
             print(f"{bff_file} could not be solved. Took {duration:.2f} seconds.")
